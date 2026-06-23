@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<title>Vexo Notifications</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<h1>🔔 Notifications</h1>
+
+<div id="notiBox"></div>
+
+<script>
+
+let notis = JSON.parse(localStorage.getItem("vexo_notifications")) || [];
+
+let box = document.getElementById("notiBox");
+
+if(notis.length === 0){
+box.innerHTML = "<p>No notifications</p>";
+}
+
+notis.reverse().forEach(n=>{
+box.innerHTML += `
+<div style="background:#111;margin:10px;padding:10px;border-radius:10px;">
+${n.text}
+</div>
+`;
+});
+
+</script>
+
+</body>
+</html>
+<link rel="manifest" href="manifest.json">

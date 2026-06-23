@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<title>Vexo Ranking</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<h1>🏆 Ranking</h1>
+
+<h2>👤 Top Users</h2>
+<div id="topUsers"></div>
+
+<h2>⭐ Top Creators (Sparks)</h2>
+<div id="topCreators"></div>
+
+<h2>🔥 Highest Level</h2>
+<div id="topLevels"></div>
+
+<h2>👥 Top Clans</h2>
+<div id="topClans"></div>
+
+<script>
+
+// ================= USERS =================
+let users = JSON.parse(localStorage.getItem("vexo_users")) || [];
+let sparks = JSON.parse(localStorage.getItem("vexo_sparks")) || [];
+let clans = JSON.parse(localStorage.getItem("vexo_clans")) || [];
+
+// ================= TOP USERS (Followers) =================
+let sortedUsers = [...users].sort((a,b)=>
+(b.followers||0) - (a.followers||0)
+);
+
+let topUsersBox = document.getElementById("topUsers");
+
+sortedUsers.slice(0,10).forEach((u,i)=>{
+
+topUsersBox.innerHTML += `
+<div style="background:#111;margin:10px;padding:10px;border-radius:10px;">
+<h3>#${i+1} ${u.name}</h3>
+<p>@${u.username}</p>
+<p>Followers: ${u.followers||0}</p>
+</div>
+`;
+
+});
+
+// ================= TOP CREATORS (Sparks Count) =================
+let creatorMap = {};
+
+sparks.forEach(s=>{
+if(!creatorMap[s.userId]){
+creatorMap[s.userId] = 0;
+}
+creatorMap[s.userId]++;
+});
+
+let creators = users.map(u=>{
+return {
+...u,
+sparkCount: creatorMap[u.id] || 0
+};
+});
+
+creators.sort((a,b)=> b.sparkCount - a.sparkCount);
+
+let creatorBox = document.getElementById("topCreators");
+
+creators.slice(0,10).forEach((u,i)=>{
+
+creatorBox.innerHTML += `
+<div style="background:#111;margin:10px;padding:10px;border-radius:10px;">
+<h3>#${i+1} ${u.name}</h3>
+<p>Sparks: ${u.sparkCount}</p>
+</div>
+`;
+
+});
+
+// ================= TOP LEVEL =================
+let levels = [...users].sort((a,b)=>
+(b.level||1) - (a.level||1)
+);
+
+let levelBox = document.getElementById("topLevels");
+
+levels.slice(0,10).forEach((u,i)=>{
+
+levelBox.innerHTML += `
+<div style="background:#111;margin:10px;padding:10px;border-radius:10px;">
+<h3>#${i+1} ${u.name}</h3>
+<p>Level: ${u.level||1}</p>
+</div>
+`;
+
+});
+
+// ================= TOP CLANS =================
+let clanSorted = [...clans].sort((a,b)=>
+(b.points||0) - (a.points||0)
+);
+
+let clanBox = document.getElementById("topClans");
+
+clanSorted.slice(0,10).forEach((c,i)=>{
+
+clanBox.innerHTML += `
+<div style="background:#111;margin:10px;padding:10px;border-radius:10px;">
+<h3>#${i+1} ${c.name}</h3>
+<p>Points: ${c.points||0}</p>
+<p>Level: ${c.level||1}</p>
+<p>Members: ${c.members.length}</p>
+</div>
+`;
+
+});
+
+</script>
+
+</body>
+<button onclick="goBack()" style="
+position:fixed;
+top:15px;
+left:15px;
+background:#111;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:10px;
+font-size:18px;
+z-index:999;
+">
+←
+</button>
+</html>
+<link rel="manifest" href="manifest.json">

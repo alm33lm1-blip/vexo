@@ -1,0 +1,120 @@
+let session = localStorage.getItem("vexo_session");
+let user = JSON.parse(localStorage.getItem("vexo_current"));
+
+if(!session || !user){
+window.location.href = "login.html";
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vexo Home</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<div class="home">
+
+<h1>Vexo</h1>
+
+<h2>Stories</h2>
+
+<div class="stories">
+<div class="story" onclick="location.href='stories.html'">
++
+</div>
+</div>
+
+<h2>🔥 Sparks</h2>
+
+<button onclick="goCreateSpark()">Create Spark</button>
+
+<div id="sparksContainer"></div>
+
+</div>
+
+<script src="../data/xp-system.js"></script>
+
+<script>
+
+function goCreateSpark(){
+location.href="create_spark.html";
+}
+
+let currentUser = JSON.parse(localStorage.getItem("vexo_current"));
+
+let sparks = JSON.parse(localStorage.getItem("vexo_sparks")) || [];
+
+let sparkBox = document.getElementById("sparksContainer");
+
+sparkBox.innerHTML = "";
+
+// 🔥 عرض الفيديوهات
+sparks.reverse().forEach(spark=>{
+
+sparkBox.innerHTML += `
+
+<div class="spark-card">
+
+<h3>@${spark.username}</h3>
+
+<div class="spark-video">
+<video src="${spark.video}" controls></video>
+</div>
+
+<button onclick="likeSpark(${spark.id})">
+❤️ ${spark.likes}
+</button>
+
+</div>
+
+`;
+
+});
+
+function likeSpark(id){
+
+let sparks = JSON.parse(localStorage.getItem("vexo_sparks")) || [];
+
+let spark = sparks.find(s=>s.id===id);
+
+if(spark){
+spark.likes++;
+
+localStorage.setItem("vexo_sparks", JSON.stringify(sparks));
+
+addXP(5);
+
+location.reload();
+}
+
+}
+
+</script>
+
+</body>
+<button onclick="goBack()" style="
+position:fixed;
+top:15px;
+left:15px;
+background:#111;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:10px;
+font-size:18px;
+z-index:999;
+">
+←
+</button>
+</html>
+<a href="rank.html">🏆 Ranking</a>
+<link rel="manifest" href="manifest.json">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>

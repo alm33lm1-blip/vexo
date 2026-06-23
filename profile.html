@@ -1,0 +1,249 @@
+let session = localStorage.getItem("vexo_session");
+let user = JSON.parse(localStorage.getItem("vexo_current"));
+
+if(!session || !user){
+window.location.href = "login.html";
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<title>Vexo Profile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<div class="profile">
+
+<!-- 🔝 TOP BAR -->
+<div style="display:flex;justify-content:space-between;align-items:center;">
+
+<!-- فراغ عشان التوازن -->
+<div></div>
+
+<h2>Vexo</h2>
+
+<!-- 🔥 الثلاث نقاط -->
+<div onclick="toggleMenu()" style="font-size:24px;cursor:pointer;">
+⋮
+</div>
+
+</div>
+
+<!-- 🔥 MENU -->
+<div id="menu" style="display:none;background:#111;padding:15px;border-radius:15px;margin-top:10px;">
+
+<p onclick="goSettings()">⚙️ Settings</p>
+<p onclick="logout()">🚪 Logout</p>
+
+</div>
+
+<!-- 🔝 HEADER -->
+<div class="top-profile">
+
+<div class="level">
+Level <span id="level">1</span>
+</div>
+
+<div class="user-area">
+
+<img src="../assets/profile.png" class="avatar">
+
+<h2>
+<span id="name">User</span>
+<span id="verifyBadge"></span>
+</h2>
+
+<p id="username">@username</p>
+
+</div>
+
+</div>
+
+<!-- 📊 STATS -->
+<div class="stats">
+
+<div>
+<strong id="followers">0</strong>
+<br>Followers
+</div>
+
+<div>
+<strong id="following">0</strong>
+<br>Following
+</div>
+
+<div>
+<strong id="sparks">0</strong>
+<br>Sparks
+</div>
+
+</div>
+
+<!-- 🧠 BIO -->
+<div class="bio" id="bio">Welcome</div>
+
+<!-- 👥 CLAN -->
+<div class="clan">
+Clan: <span id="clan">No Clan</span>
+</div>
+
+<!-- ✏️ EDIT -->
+<button onclick="editProfile()">Edit Profile</button>
+
+<!-- ⭐ HIGHLIGHTS -->
+<div class="highlights">
+<div class="highlight">+</div>
+<div class="highlight">Gaming</div>
+<div class="highlight">Best</div>
+<div class="highlight">Trips</div>
+</div>
+
+<!-- 📂 TABS -->
+<div class="tabs">
+<div onclick="showTab('posts')">Posts</div>
+<div class="active" onclick="showTab('sparks')">Sparks</div>
+<div onclick="showTab('about')">About</div>
+</div>
+
+<!-- 📦 CONTENT -->
+<div id="posts" class="content-grid"></div>
+<div id="sparksTab" class="content-grid"></div>
+<div id="about" class="content-grid"></div>
+
+</div>
+
+<script src="../data/xp-system.js"></script>
+
+<script>
+
+// ================= USER =================
+let user = JSON.parse(localStorage.getItem("vexo_current"));
+
+if(!user){
+window.location.href="login.html";
+}
+
+// ================= DISPLAY =================
+document.getElementById("name").innerText = user.name;
+document.getElementById("username").innerText = "@" + user.username;
+document.getElementById("level").innerText = user.level || 1;
+document.getElementById("followers").innerText = user.followers || 0;
+document.getElementById("following").innerText = user.following || 0;
+document.getElementById("sparks").innerText = user.sparks || 0;
+document.getElementById("bio").innerText = user.bio || "No bio";
+document.getElementById("clan").innerText = user.clan || "No Clan";
+
+// ✅ VERIFY
+if(user.verified){
+document.getElementById("verifyBadge").innerHTML =
+`<span class="verified">✦</span>`;
+}
+
+// ================= MENU =================
+function toggleMenu(){
+let menu = document.getElementById("menu");
+menu.style.display = (menu.style.display === "none") ? "block" : "none";
+}
+
+function goSettings(){
+window.location.href="settings.html";
+}
+
+function logout(){
+localStorage.removeItem("vexo_current");
+window.location.href="login.html";
+}
+
+// ================= EDIT =================
+function editProfile(){
+
+let name = prompt("Name", user.name);
+let bio = prompt("Bio", user.bio);
+
+if(name) user.name = name;
+if(bio) user.bio = bio;
+
+localStorage.setItem("vexo_current", JSON.stringify(user));
+
+location.reload();
+}
+
+// ================= TABS =================
+function showTab(tab){
+
+document.getElementById("posts").style.display = "none";
+document.getElementById("sparksTab").style.display = "none";
+document.getElementById("about").style.display = "none";
+
+if(tab === "posts"){
+document.getElementById("posts").style.display = "grid";
+}
+
+if(tab === "sparks"){
+document.getElementById("sparksTab").style.display = "grid";
+}
+
+if(tab === "about"){
+document.getElementById("about").style.display = "block";
+}
+
+}
+
+// ================= SPARKS =================
+let sparks = JSON.parse(localStorage.getItem("vexo_sparks")) || [];
+
+let mySparks = sparks.filter(s => s.userId === user.id);
+
+let sparkBox = document.getElementById("sparksTab");
+
+sparkBox.innerHTML = "";
+
+mySparks.forEach(s=>{
+sparkBox.innerHTML += `
+<div class="content-item">
+<video src="${s.video}" width="100%" controls></video>
+</div>
+`;
+});
+
+// ================= POSTS =================
+let postsBox = document.getElementById("posts");
+
+postsBox.innerHTML = `
+<div class="content-item">Post 1</div>
+<div class="content-item">Post 2</div>
+`;
+
+// ================= ABOUT =================
+let aboutBox = document.getElementById("about");
+
+aboutBox.innerHTML = `
+<p>📅 Joined: ${user.date || "2026"}</p>
+<p>📍 Location: ${user.location || "Unknown"}</p>
+<p>⭐ Level: ${user.level}</p>
+`;
+
+showTab("sparks");
+
+</script>
+
+</body>
+<button onclick="goBack()" style="
+position:fixed;
+top:15px;
+left:15px;
+background:#111;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:10px;
+font-size:18px;
+z-index:999;
+">
+←
+</button>
+</html>
+<link rel="manifest" href="manifest.json">
